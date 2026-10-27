@@ -1,0 +1,10 @@
+{
+  "evaluation": "project-specific",
+  "mode": "live",
+  "verified": false,
+  "reason": "No local API key was available when this status was written. No live quality results are claimed.",
+  "planned_runs": 60,
+  "completed_runs": 0,
+  "summary": null,
+  "unverified": ["live smoke", "full 30-case paired comparison", "at least 8/10 legitimate live completions"]
+}

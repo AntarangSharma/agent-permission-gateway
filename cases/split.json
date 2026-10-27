@@ -1,0 +1,16 @@
+{
+  "frozen_before_prompt_tuning": true,
+  "heldout": [
+    "L07",
+    "L08",
+    "L09",
+    "L10",
+    "A15",
+    "A16",
+    "A17",
+    "A18",
+    "A19",
+    "A20"
+  ],
+  "note": "Do not tune prompts using heldout outcomes. All cases are original."
+}

@@ -1,0 +1,1 @@
+"""Local agent permission gateway."""

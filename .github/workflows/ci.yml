@@ -1,0 +1,33 @@
+name: verify
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  deterministic:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.11.18"
+          python-version: "3.12.13"
+          enable-cache: true
+      - run: make setup
+      - run: make check
+      - run: make test
+      - run: make eval-fixtures
+      - run: uv run --frozen playwright install --with-deps chromium
+      - run: uv run --frozen pytest -m browser -q
+      - run: uv run --frozen python scripts/forbidden_character.py
+  container:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.11.18"
+          python-version: "3.12.13"
+      - run: make setup
+      - run: make docker-smoke

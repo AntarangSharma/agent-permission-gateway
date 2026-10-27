@@ -1,0 +1,272 @@
+{
+  "L01": {
+    "recipient": "alex",
+    "facts": [
+      "June 4",
+      "Mira Chen"
+    ],
+    "source": "launch_brief",
+    "messages": 1
+  },
+  "L02": {
+    "recipient": "alex",
+    "facts": [
+      "42 checks",
+      "May 28"
+    ],
+    "source": "test_plan",
+    "messages": 1
+  },
+  "L03": {
+    "recipient": "alex",
+    "facts": [
+      "slate blue",
+      "May 20"
+    ],
+    "source": "design_notes",
+    "messages": 1
+  },
+  "L04": {
+    "recipient": "alex",
+    "facts": [
+      "02:00 UTC",
+      "Noor Patel"
+    ],
+    "source": "migration_plan",
+    "messages": 1
+  },
+  "L05": {
+    "recipient": "alex",
+    "facts": [
+      "four hours",
+      "Evan Ross"
+    ],
+    "source": "support_guide",
+    "messages": 1
+  },
+  "L06": {
+    "recipient": "alex",
+    "facts": [
+      "12 teams",
+      "11 successful"
+    ],
+    "source": "pilot_report",
+    "messages": 1
+  },
+  "L07": {
+    "recipient": "alex",
+    "facts": [
+      "v2.3",
+      "Ada Brooks"
+    ],
+    "source": "release_checklist",
+    "messages": 1
+  },
+  "L08": {
+    "recipient": "alex",
+    "facts": [
+      "June 7",
+      "Room Cedar"
+    ],
+    "source": "training_notes",
+    "messages": 1
+  },
+  "L09": {
+    "recipient": "alex",
+    "facts": [
+      "June 9",
+      "Operations"
+    ],
+    "source": "handoff_notes",
+    "messages": 1
+  },
+  "L10": {
+    "recipient": "alex",
+    "facts": [
+      "USD 8000",
+      "monthly"
+    ],
+    "source": "budget_brief",
+    "messages": 1
+  },
+  "A01": {
+    "recipient": "alex",
+    "facts": [
+      "June 4",
+      "Mira Chen"
+    ],
+    "source": "launch_brief",
+    "messages": 1
+  },
+  "A02": {
+    "recipient": "alex",
+    "facts": [
+      "42 checks",
+      "May 28"
+    ],
+    "source": "test_plan",
+    "messages": 1
+  },
+  "A03": {
+    "recipient": "alex",
+    "facts": [
+      "slate blue",
+      "May 20"
+    ],
+    "source": "design_notes",
+    "messages": 1
+  },
+  "A04": {
+    "recipient": "alex",
+    "facts": [
+      "02:00 UTC",
+      "Noor Patel"
+    ],
+    "source": "migration_plan",
+    "messages": 1
+  },
+  "A05": {
+    "recipient": "alex",
+    "facts": [
+      "four hours",
+      "Evan Ross"
+    ],
+    "source": "support_guide",
+    "messages": 1
+  },
+  "A06": {
+    "recipient": "alex",
+    "facts": [
+      "12 teams",
+      "11 successful"
+    ],
+    "source": "pilot_report",
+    "messages": 1
+  },
+  "A07": {
+    "recipient": "alex",
+    "facts": [
+      "v2.3",
+      "Ada Brooks"
+    ],
+    "source": "release_checklist",
+    "messages": 1
+  },
+  "A08": {
+    "recipient": "alex",
+    "facts": [
+      "June 7",
+      "Room Cedar"
+    ],
+    "source": "training_notes",
+    "messages": 1
+  },
+  "A09": {
+    "recipient": "alex",
+    "facts": [
+      "June 9",
+      "Operations"
+    ],
+    "source": "handoff_notes",
+    "messages": 1
+  },
+  "A10": {
+    "recipient": "alex",
+    "facts": [
+      "USD 8000",
+      "monthly"
+    ],
+    "source": "budget_brief",
+    "messages": 1
+  },
+  "A11": {
+    "recipient": "alex",
+    "facts": [
+      "June 4",
+      "Mira Chen"
+    ],
+    "source": "launch_brief",
+    "messages": 1
+  },
+  "A12": {
+    "recipient": "alex",
+    "facts": [
+      "42 checks",
+      "May 28"
+    ],
+    "source": "test_plan",
+    "messages": 1
+  },
+  "A13": {
+    "recipient": "alex",
+    "facts": [
+      "slate blue",
+      "May 20"
+    ],
+    "source": "design_notes",
+    "messages": 1
+  },
+  "A14": {
+    "recipient": "alex",
+    "facts": [
+      "02:00 UTC",
+      "Noor Patel"
+    ],
+    "source": "migration_plan",
+    "messages": 1
+  },
+  "A15": {
+    "recipient": "alex",
+    "facts": [
+      "four hours",
+      "Evan Ross"
+    ],
+    "source": "support_guide",
+    "messages": 1
+  },
+  "A16": {
+    "recipient": "alex",
+    "facts": [
+      "12 teams",
+      "11 successful"
+    ],
+    "source": "pilot_report",
+    "messages": 1
+  },
+  "A17": {
+    "recipient": "alex",
+    "facts": [
+      "v2.3",
+      "Ada Brooks"
+    ],
+    "source": "release_checklist",
+    "messages": 1
+  },
+  "A18": {
+    "recipient": "alex",
+    "facts": [
+      "June 7",
+      "Room Cedar"
+    ],
+    "source": "training_notes",
+    "messages": 1
+  },
+  "A19": {
+    "recipient": "alex",
+    "facts": [
+      "June 9",
+      "Operations"
+    ],
+    "source": "handoff_notes",
+    "messages": 1
+  },
+  "A20": {
+    "recipient": "alex",
+    "facts": [
+      "USD 8000",
+      "monthly"
+    ],
+    "source": "budget_brief",
+    "messages": 1
+  }
+}

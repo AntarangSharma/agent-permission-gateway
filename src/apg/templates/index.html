@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="csrf-token" content="{{ csrf }}">
+  <title>Agent Permission Gateway</title>
+  <link rel="stylesheet" href="/static/style.css"><script src="/static/app.js" defer></script>
+</head>
+<body>
+<header><div><p class="eyebrow">PROJECT CEDAR / LOCAL SIMULATION</p><h1>Agent Permission Gateway</h1><p>Inspect what an agent asks to do, what policy permits, and what actually happens.</p></div><span class="badge" id="mode-label">FIXTURE MODE</span></header>
+<main>
+<section class="control-panel" aria-label="Run controls">
+  <div class="field wide"><label for="case">Evaluation case</label><select id="case">{% for case in cases %}<option value="{{ case.id }}" {% if case.id == 'A01' %}selected{% endif %}>{{ case.id }} / {{ case.title }} / {{ case.split }}</option>{% endfor %}</select></div>
+  <div class="field"><label for="mode">Agent source</label><select id="mode"><option value="fixture">Fixture script (no key)</option><option value="live">Live OpenAI model</option></select></div>
+  <div class="field"><label for="variant">Permission enforcement</label><select id="variant"><option value="gateway">Gateway enforced</option><option value="prompt_only">Prompt only (simulation)</option></select></div>
+  <button id="run">Run case</button>
+  <p class="control-note" id="mode-note">Scripted tool choices demonstrate the boundary. They do not measure live model quality.</p>
+</section>
+<div id="notice" role="status" aria-live="polite">Choose a case, inspect the document, then run it.</div>
+<div class="workspace">
+  <section class="panel source"><div class="section-title"><h2>01 / Task &amp; source</h2><span>Untrusted document</span></div><p id="task"></p><h3 id="document-title"></h3><pre id="document"></pre><div class="policy"><strong>Trusted session policy</strong><p>Read: 10 project documents<br>Message: <code>alex</code> only<br>Delivery: exact action requires approval</p></div></section>
+  <section class="panel trace"><div class="section-title"><h2>02 / Attempted calls</h2><span id="trace-count">No run yet</span></div><div id="timeline" class="empty">Tool decisions appear here after a run.</div></section>
+  <section class="panel effects"><div class="section-title"><h2>03 / Approval &amp; effects</h2></div><div id="approval" class="empty">No action waiting for approval.</div><h3>Simulated outbox</h3><div id="outbox" class="empty">No messages executed.</div><h3>Task outcome</h3><div id="outcome" class="empty">Not evaluated yet.</div></section>
+</div>
+<section class="panel replay-panel"><div><h2>Replay and rerun</h2><p>A trace replay rechecks recorded calls and executes nothing. A fresh rerun creates a clean session and asks the selected agent again.</p></div><div class="actions"><button id="replay" class="secondary" disabled>Recheck trace</button><button id="fresh" class="secondary" disabled>Fresh rerun</button><button id="resume" class="secondary" disabled>Resume saved run</button></div><pre id="replay-output" hidden></pre></section>
+<section class="panel"><div class="section-title"><h2>Project-specific comparison</h2><span>Saved evaluation reports</span></div><p>Same tasks, tools, prompts, and starting snapshots. Fixture numbers describe scripted behavior only.</p><div id="comparison" class="empty">No saved report available. Run make eval-fixtures.</div></section>
+<footer>One agent. Local documents. Simulated effects. Approval never authorizes a forbidden recipient.</footer>
+</main>
+</body></html>
