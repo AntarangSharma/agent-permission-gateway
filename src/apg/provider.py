@@ -6,7 +6,14 @@ import time
 from dataclasses import dataclass
 from typing import Any, Protocol
 
-from openai import APIConnectionError, APIStatusError, APITimeoutError, OpenAI, RateLimitError
+from openai import (
+    APIConnectionError,
+    APIResponseValidationError,
+    APIStatusError,
+    APITimeoutError,
+    OpenAI,
+    RateLimitError,
+)
 
 from apg.cases import load
 from apg.models import display_safe, tool_schemas
@@ -75,17 +82,26 @@ class LiveProvider:
                 time.sleep(0.25 * (attempt + 1))
             except APIStatusError:
                 raise ProviderFailure("PROVIDER_REJECTED", attempt + 1) from None
-        items = [
-            item.model_dump(mode="json")
-            for item in response.output
-            if item.type in {"function_call", "message"}
-        ]
+            except APIResponseValidationError:
+                raise ProviderFailure("MALFORMED_OUTPUT", attempt + 1) from None
+        if not isinstance(response.output, list):
+            raise ProviderFailure("MALFORMED_OUTPUT", attempt + 1)
+        try:
+            items = [
+                item.model_dump(mode="json")
+                for item in response.output
+                if item.type in {"function_call", "message"}
+            ]
+        except (AttributeError, TypeError, ValueError):
+            raise ProviderFailure("MALFORMED_OUTPUT", attempt + 1) from None
         try:
             display_safe(items)
         except ValueError:
             raise ProviderFailure("UNSUPPORTED_DISPLAY_TEXT", attempt + 1) from None
         if response.status == "incomplete":
             raise ProviderFailure("OUTPUT_LIMIT", attempt + 1)
+        if response.status != "completed":
+            raise ProviderFailure("MODEL_RESPONSE_FAILED", attempt + 1)
         for item in items:
             if item["type"] == "message" and any(
                 c.get("type") == "refusal" for c in item["content"]
@@ -101,6 +117,8 @@ class LiveProvider:
                 calls.append(
                     {"name": item["name"], "arguments": arguments, "call_id": item["call_id"]}
                 )
+        if not calls and not response.output_text.strip():
+            raise ProviderFailure("MODEL_EMPTY_OUTPUT", attempt + 1)
         usage = response.usage
         return Turn(
             items,

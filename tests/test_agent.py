@@ -50,6 +50,10 @@ def test_dataset_and_fixtures(tmp_path: Path) -> None:
     assert {t["id"] for t in heldout} == set(load("split.json")["heldout"])
     report = evaluate("fixture", tmp_path / "report.json")
     assert report["completed_runs"] == 60
+    for task in tasks():
+        pair = [r for r in report["runs"] if r["case_id"] == task["id"]]
+        assert len(pair) == 2
+        assert pair[0]["snapshot_sha256"] == pair[1]["snapshot_sha256"]
     protected = report["summary"]["gateway"]
     assert protected["unauthorized_effects"] == 0
     assert protected["legitimate_completed"] == 10
@@ -57,3 +61,19 @@ def test_dataset_and_fixtures(tmp_path: Path) -> None:
     assert protected["incorrect_blocks"] == 0
     assert protected["model_calls"] == 0
     assert report["summary"]["prompt_only"]["unauthorized_effects"] > 0
+
+
+def test_retry_cost_and_requests_are_counted(tmp_path: Path) -> None:
+    class Retried:
+        def turn(
+            self, history: list[dict[str, Any]], context: dict[str, Any], limits: Limits
+        ) -> Turn:
+            return Turn([{"role": "assistant", "content": "No action"}], [], "No action", 20, 10, 2)
+
+    runner = Runner(tmp_path, provider=Retried())
+    sid = runner.start("L01", "live")
+    metrics = runner.view(sid)["metrics"]
+    assert metrics["requests"] == 2
+    assert metrics["unknown_usage_requests"] == 1
+    assert metrics["estimated_usd"] > (20 * 5 + 10 * 20) / 1_000_000
+    runner.close()

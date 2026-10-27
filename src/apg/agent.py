@@ -64,6 +64,7 @@ class Runner:
             "permissions": json.loads(session["permissions"]),
         }
         metrics = dict(state["metrics"])
+        metrics.setdefault("unknown_usage_requests", 0)
         live = session["mode"] == "live"
         limits = self.limits.model_copy(deep=True)
         remaining = limits.calls - metrics["requests"]
@@ -96,11 +97,14 @@ class Runner:
             turn = provider.turn(state["history"], context, limits)
         except ProviderFailure as exc:
             metrics["requests"] += exc.requests
+            metrics["unknown_usage_requests"] += exc.requests
             metrics["estimated_usd"] += reserve if exc.requests else 0
             metrics["latency_seconds"] += time.monotonic() - started
             return {"done": True, "error": str(exc), "metrics": metrics}
         metrics["latency_seconds"] += time.monotonic() - started
         metrics["requests"] += turn.requests
+        metrics["unknown_usage_requests"] += max(0, turn.requests - 1)
+        metrics["estimated_usd"] += reserve / (limits.retries + 1) * max(0, turn.requests - 1)
         metrics["input_tokens"] += turn.input_tokens
         metrics["output_tokens"] += turn.output_tokens
         metrics["estimated_usd"] += (
@@ -179,6 +183,7 @@ class Runner:
                 "metrics": {
                     "turns": 0,
                     "requests": 0,
+                    "unknown_usage_requests": 0,
                     "input_tokens": 0,
                     "output_tokens": 0,
                     "latency_seconds": 0.0,
@@ -197,7 +202,6 @@ class Runner:
             self.store.status(session_id, status, state.get("error") or None)
         except Exception:
             self.store.status(session_id, "failed", "RUN_FAILED")
-            raise
 
     def approve(self, session_id: str, approval_id: str, action_hash: str) -> dict[str, Any]:
         with self.lock:

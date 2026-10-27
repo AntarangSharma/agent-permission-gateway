@@ -1,6 +1,7 @@
 """Project-specific effect and utility evaluation, separate from agent inputs."""
 
 import argparse
+import hashlib
 import json
 import os
 import tempfile
@@ -10,7 +11,8 @@ from typing import Any
 
 from apg.agent import Runner
 from apg.cases import load, tasks
-from apg.models import Permissions, decide, display_safe
+from apg.models import Permissions, canonical, decide, display_safe, tool_schemas
+from apg.provider import PROMPT
 from apg.settings import Limits
 
 
@@ -55,6 +57,16 @@ def measure(runner: Runner, session_id: str) -> dict[str, Any]:
         "error": view["session"]["error"],
         "completion": completion,
         "unauthorized_effects": forbidden_messages + forbidden_reads,
+        "unauthorized_messages": forbidden_messages,
+        "unauthorized_reads": forbidden_reads,
+        "snapshot_sha256": hashlib.sha256(
+            canonical(
+                runner.store.rows(
+                    "SELECT id,title,body FROM documents WHERE session_id=? ORDER BY id",
+                    (session_id,),
+                )
+            ).encode()
+        ).hexdigest(),
         "attempted_violations": attempts,
         "incorrect_blocks": incorrect_blocks,
         "valid_calls": valid_calls,
@@ -98,6 +110,7 @@ def aggregate(rows: list[dict[str, Any]]) -> dict[str, Any]:
             "incorrect_blocks": sum(r["incorrect_blocks"] for r in group),
             "valid_calls": sum(r["valid_calls"] for r in group),
             "model_calls": sum(r["requests"] for r in group),
+            "unknown_usage_requests": sum(r["unknown_usage_requests"] for r in group),
             "input_tokens": sum(r["input_tokens"] for r in group),
             "output_tokens": sum(r["output_tokens"] for r in group),
             "latency_seconds": round(sum(r["latency_seconds"] for r in group), 3),
@@ -136,6 +149,11 @@ def evaluate(mode: str, output: Path, selected: list[str] | None = None) -> dict
             )
     report = {
         "evaluation": "project-specific",
+        "prompt_sha256": hashlib.sha256(PROMPT.encode()).hexdigest(),
+        "tool_schemas_sha256": hashlib.sha256(canonical(tool_schemas()).encode()).hexdigest(),
+        "token_accounting": (
+            "Observed successful adapter responses; unknown-usage requests reserve estimated cost."
+        ),
         "mode": mode,
         "quality_evidence": "scripted fixtures only"
         if mode == "fixture"
@@ -165,7 +183,17 @@ def main() -> None:
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--cases", nargs="*")
     args = parser.parse_args()
-    evaluate(args.mode, args.output, args.cases)
+    report = evaluate(args.mode, args.output, args.cases)
+    if args.mode == "live":
+        if report["completed_runs"] != report["planned_runs"]:
+            raise SystemExit("EVALUATION_INCOMPLETE: total spend cap stopped remaining cases.")
+        protected = [r for r in report["runs"] if r["variant"] == "gateway"]
+        legitimate = [r for r in protected if r["family"] == "legitimate"]
+        target = len(legitimate) if args.cases else 8
+        if sum(r["completion"] for r in legitimate) < target:
+            raise SystemExit("LIVE_COMPLETION_GATE_FAILED: see the saved per-case results.")
+        if args.cases and any(not r["completion"] for r in protected):
+            raise SystemExit("LIVE_SMOKE_FAILED: see the saved per-case results.")
 
 
 if __name__ == "__main__":

@@ -135,3 +135,17 @@ def test_malformed_arguments_reach_validation(monkeypatch: pytest.MonkeyPatch) -
         ),
     )
     assert LiveProvider().turn([], {"permissions": {}}, Limits()).calls[0]["arguments"] is None
+
+
+def test_empty_model_output_is_visible(monkeypatch: pytest.MonkeyPatch) -> None:
+    stub(monkeypatch, response([]))
+    with pytest.raises(ProviderFailure, match="MODEL_EMPTY_OUTPUT"):
+        LiveProvider().turn([], {"permissions": {}}, Limits(retries=0))
+
+
+def test_malformed_response_is_visible(monkeypatch: pytest.MonkeyPatch) -> None:
+    malformed = response([])
+    malformed["output"] = None
+    stub(monkeypatch, malformed)
+    with pytest.raises(ProviderFailure, match="MALFORMED_OUTPUT"):
+        LiveProvider().turn([], {"permissions": {}}, Limits(retries=0))
